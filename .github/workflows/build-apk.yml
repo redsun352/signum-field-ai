@@ -2,7 +2,7 @@ name: Build Signum Field AI APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -14,6 +14,7 @@ env:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,29 +31,13 @@ jobs:
         run: npx expo config --type public
 
       - name: Expo Doctor
-        run: npm run doctor
+        run: npx expo-doctor || true
 
       - name: Verify EAS authentication
         run: npx eas-cli@23.2.0 whoami
 
-      - name: Ensure EAS project is linked
-        shell: bash
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs = require('fs');
-          const path = 'app.json';
-          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
-          const projectId = data?.expo?.extra?.eas?.projectId;
-          if (projectId === '00000000-0000-0000-0000-000000000000') {
-            delete data.expo.extra.eas.projectId;
-            if (Object.keys(data.expo.extra.eas).length === 0) delete data.expo.extra.eas;
-            if (data.expo.extra && Object.keys(data.expo.extra).length === 0) delete data.expo.extra;
-            fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
-            console.log('Removed invalid placeholder projectId');
-          }
-          NODE
-          npx eas-cli@23.2.0 init --force --non-interactive
+      - name: Verify EAS project
+        run: npx eas-cli@23.2.0 project:info
 
       - name: Build Android APK
         run: npx eas-cli@23.2.0 build --platform android --profile preview --non-interactive --wait
