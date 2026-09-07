@@ -1,0 +1,10 @@
+import { useLocalSearchParams } from 'expo-router';
+import { ScrollView, Text } from 'react-native';
+import { Card, styles } from '../src/components/Card';
+import { Program } from '../src/data/manual';
+export default function Recommendation(){
+ const p=useLocalSearchParams<{data?:string}>(); const r=p.data?JSON.parse(p.data) as {program:Program;changes:string[];warnings:string[]}:null;
+ if(!r) return <ScrollView style={styles.page}><Text style={styles.title}>Reçete</Text><Text style={styles.body}>Profil bulunamadı.</Text></ScrollView>;
+ const x=r.program;
+ return <ScrollView style={styles.page}><Text style={styles.title}>Ayar Reçetesi</Text><Text style={styles.subtitle}>{x.name}</Text><Card><Text style={styles.cardTitle}>Tam kombinasyon</Text><Text style={styles.body}>ST Sensitivity: {x.sensitivityST}{`\n`}RT Sensitivity: {x.sensitivityRT}{`\n`}Sensor Current Mode: {x.sensorMode}{`\n`}Sound Mode: {x.soundMode}{`\n`}DHR: {x.dhr}{`\n`}AT: {x.speedAT}{`\n`}Gain: {x.gain}{`\n`}Accumulation: {x.accumulation}{`\n`}Number of tones: {x.tones}{`\n`}Border LT: {x.borderLT}{`\n`}Vol. WS: {x.volWS}{`\n`}Volume LT: {x.volumeLT}{`\n`}Shift Freq: {x.shiftFreq}{`\n`}ST length: {x.stLength}{`\n`}Volume RT: {x.volumeRT}{`\n`}MM Speed: {x.mmSpeed}{`\n`}EMI Filter MM: {x.emiMM}{`\n`}Filter T: {x.filterT}{`\n`}Filter A: {x.filterA}{`\n`}GS Zone: {x.gsZone}</Text></Card><Card><Text style={styles.cardTitle}>Neden?</Text><Text style={styles.body}>{r.changes.length?r.changes.map((v,i)=>`${i+1}. ${v}`).join(`\n`):'Profil için ek değişiklik gerekmedi.'}</Text></Card>{r.warnings.length>0&&<Card><Text style={styles.cardTitle}>Uyarılar</Text><Text style={styles.body}>{r.warnings.map((v,i)=>`${i+1}. ${v}`).join(`\n`)}</Text></Card>}<Card><Text style={styles.cardTitle}>Kaynak / güven</Text><Text style={styles.body}>Fabrika programları: supplied Signum MFD 7272M v2.06 manual. Diğer değişiklikler uygulama karar motorunun saha-öncesi önerileridir; cihaz üzerinde Ground Balance ve gerçek sinyal ile doğrulanmalıdır.</Text></Card></ScrollView>;
+}
