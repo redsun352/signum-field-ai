@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "scheme": "signumfieldai",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
     "android": {
       "package": "com.signumfieldai.app",
       "permissions": ["CAMERA", "RECORD_AUDIO"]
