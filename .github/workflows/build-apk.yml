@@ -8,6 +8,9 @@ on:
 permissions:
   contents: read
 
+env:
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
@@ -18,7 +21,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install dependencies
         run: npm install
@@ -26,15 +29,8 @@ jobs:
       - name: Validate Expo project
         run: npx expo config --type public
 
-      - name: Expo/EAS version
-        run: npx eas --version
-
       - name: Check Expo authentication
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: npx eas whoami
+        run: npx eas-cli@latest whoami
 
       - name: Build Android APK
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: npx eas build --platform android --profile preview --non-interactive --wait
+        run: npx eas-cli@latest build --platform android --profile preview --non-interactive --wait
