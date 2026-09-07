@@ -7,7 +7,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "prebuild": "expo prebuild",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "doctor": "expo-doctor"
   },
   "dependencies": {
     "expo": "~57.0.0",
@@ -23,6 +24,9 @@
   "devDependencies": {
     "@types/react": "~19.1.10",
     "typescript": "~5.9.2",
-    "eas-cli": "^23.2.0"
+    "eas-cli": "23.2.0"
+  },
+  "engines": {
+    "node": ">=22.13.0"
   }
 }
