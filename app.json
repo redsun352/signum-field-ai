@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Signum Field AI",
+    "slug": "signum-field-ai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "signumfieldai",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "android": {
+      "package": "com.signumfieldai.app",
+      "permissions": ["CAMERA", "RECORD_AUDIO"]
+    },
+    "plugins": [
+      "expo-router",
+      ["expo-camera", {"cameraPermission": "Signum Field AI needs camera access to analyze terrain and the detector screen.", "microphonePermission": "Signum Field AI uses the microphone for optional detector-sound analysis."}],
+      "expo-audio",
+      "expo-sqlite"
+    ],
+    "experiments": {"typedRoutes": true}
+  }
+}
