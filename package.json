@@ -7,7 +7,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "prebuild": "expo prebuild",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "doctor": "expo-doctor"
   },
   "dependencies": {
     "expo": "~57.0.9",
@@ -15,7 +16,7 @@
     "expo-audio": "~57.0.4",
     "expo-router": "~57.0.19",
     "expo-sqlite": "~57.0.2",
-    "expo-status-bar": "~57.0.1",
+    "expo-status-bar": "~3.0.1",
     "expo-asset": "~12.0.8",
     "expo-constants": "~18.0.10",
     "expo-linking": "~8.0.11",
@@ -28,7 +29,8 @@
   "devDependencies": {
     "@types/react": "~19.2.4",
     "typescript": "~6.0.3",
-    "eas-cli": "23.2.0"
+    "eas-cli": "23.2.0",
+    "expo-doctor": "^1.17.0"
   },
   "engines": {
     "node": ">=22.13.0"
