@@ -29,10 +29,10 @@ jobs:
       - name: Validate Expo project
         run: npx expo config --type public
 
-      - name: Check Expo authentication
-        run: npx eas-cli@latest whoami
+      - name: Verify EAS authentication
+        run: npx eas-cli@23.2.0 whoami
 
-      - name: Remove invalid placeholder EAS projectId
+      - name: Ensure EAS project is linked
         shell: bash
         run: |
           set -euo pipefail
@@ -40,23 +40,16 @@ jobs:
           const fs = require('fs');
           const path = 'app.json';
           const data = JSON.parse(fs.readFileSync(path, 'utf8'));
-          const eas = data?.expo?.extra?.eas;
-          if (eas?.projectId === '00000000-0000-0000-0000-000000000000') {
+          const projectId = data?.expo?.extra?.eas?.projectId;
+          if (projectId === '00000000-0000-0000-0000-000000000000') {
             delete data.expo.extra.eas.projectId;
             if (Object.keys(data.expo.extra.eas).length === 0) delete data.expo.extra.eas;
-            if (Object.keys(data.expo.extra).length === 0) delete data.expo.extra;
+            if (data.expo.extra && Object.keys(data.expo.extra).length === 0) delete data.expo.extra;
             fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
-            console.log('Removed invalid placeholder projectId from app.json');
-          } else {
-            console.log('No invalid placeholder projectId found');
+            console.log('Removed invalid placeholder projectId');
           }
           NODE
-
-      - name: Create or link EAS project
-        run: npx eas-cli@latest init --force --non-interactive
-
-      - name: Show resolved Expo config
-        run: npx expo config --type public
+          npx eas-cli@23.2.0 init --force --non-interactive
 
       - name: Build Android APK
-        run: npx eas-cli@latest build --platform android --profile preview --non-interactive --wait
+        run: npx eas-cli@23.2.0 build --platform android --profile preview --non-interactive --wait
