@@ -1,0 +1,79 @@
+name: Auto Repair Signum Field AI
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Validate Signum Field AI", "Build Signum Field AI APK"]
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: read
+  issues: write
+
+jobs:
+  diagnose:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Collect failed run information
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            RUN_ID="${{ github.event.workflow_run.id }}"
+          else
+            RUN_ID="${{ github.run_id }}"
+          fi
+          echo "RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
+          gh run view "$RUN_ID" --json status,conclusion,name,headSha,url > repair-run.json
+          gh run view "$RUN_ID" --log > repair-run.log || true
+          gh run view "$RUN_ID" --json jobs > repair-jobs.json || true
+
+      - name: Static TypeScript diagnostics
+        run: |
+          set +e
+          npm install 2>&1 | tee repair-npm.log
+          npm run typecheck 2>&1 | tee repair-typecheck.log
+          exit 0
+
+      - name: Create repair report
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          text='\n'.join([
+              Path('repair-run.log').read_text(errors='ignore') if Path('repair-run.log').exists() else '',
+              Path('repair-npm.log').read_text(errors='ignore') if Path('repair-npm.log').exists() else '',
+              Path('repair-typecheck.log').read_text(errors='ignore') if Path('repair-typecheck.log').exists() else '',
+          ])
+          markers=['error','Error','ERROR','failed','FAIL','ERESOLVE','TS']
+          lines=[x for x in text.splitlines() if any(m in x for m in markers)]
+          report='\n'.join(lines[-250:])
+          Path('AUTO_REPAIR_REPORT.md').write_text('# Auto Repair Report\n\n## Detected errors\n\n```text\n'+report+'\n```\n',encoding='utf-8')
+          PY
+
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-repair-diagnostics
+          path: |
+            AUTO_REPAIR_REPORT.md
+            repair-*.log
+            repair-*.json
+
+      - name: Create GitHub issue with diagnostics
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --title "Auto Repair: failed CI run $RUN_ID" --body-file AUTO_REPAIR_REPORT.md || true
+
+  repair:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Reserved for reviewed autonomous repair commits"
