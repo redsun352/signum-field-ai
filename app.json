@@ -20,7 +20,7 @@
     "experiments": {"typedRoutes": true},
     "extra": {
       "eas": {
-        "projectId": "00000000-0000-0000-0000-000000000000"
+        "projectId": "4fb00ebb-49a0-4365-b14d-98a11eebd18a"
       }
     }
   }
