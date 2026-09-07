@@ -32,16 +32,28 @@ jobs:
       - name: Check Expo authentication
         run: npx eas-cli@latest whoami
 
-      - name: Ensure EAS project is linked
+      - name: Remove invalid placeholder EAS projectId
         shell: bash
         run: |
           set -euo pipefail
-          if grep -q '00000000-0000-0000-0000-000000000000' app.json 2>/dev/null; then
-            echo 'Placeholder EAS projectId detected. Creating/linking project...'
-            npx eas-cli@latest init --force --non-interactive
-          else
-            echo 'EAS projectId already present.'
-          fi
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'app.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const eas = data?.expo?.extra?.eas;
+          if (eas?.projectId === '00000000-0000-0000-0000-000000000000') {
+            delete data.expo.extra.eas.projectId;
+            if (Object.keys(data.expo.extra.eas).length === 0) delete data.expo.extra.eas;
+            if (Object.keys(data.expo.extra).length === 0) delete data.expo.extra;
+            fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+            console.log('Removed invalid placeholder projectId from app.json');
+          } else {
+            console.log('No invalid placeholder projectId found');
+          }
+          NODE
+
+      - name: Create or link EAS project
+        run: npx eas-cli@latest init --force --non-interactive
 
       - name: Show resolved Expo config
         run: npx expo config --type public
