@@ -1,0 +1,29 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'com.facebook.react'
+
+react {
+  autolinkLibrariesWithApp()
+}
+
+android {
+  namespace 'com.signumfieldai.app'
+  compileSdk rootProject.ext.compileSdkVersion
+  defaultConfig {
+    applicationId 'com.signumfieldai.app'
+    minSdk rootProject.ext.minSdkVersion
+    targetSdk rootProject.ext.targetSdkVersion
+    versionCode 1
+    versionName '1.0.0'
+  }
+  signingConfigs { debug { } release { signingConfig signingConfigs.debug } }
+  buildTypes {
+    debug { signingConfig signingConfigs.debug }
+    release { signingConfig signingConfigs.debug; minifyEnabled false; shrinkResources false }
+  }
+}
+
+dependencies {
+  implementation('com.facebook.react:react-android')
+  if (hermesEnabled.toBoolean()) implementation('com.facebook.react:hermes-android')
+}
