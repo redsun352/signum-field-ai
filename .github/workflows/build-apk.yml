@@ -8,9 +8,6 @@ on:
 permissions:
   contents: read
 
-env:
-  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
 jobs:
   build-apk:
     runs-on: ubuntu-latest
@@ -28,17 +25,19 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Validate Expo project
-        run: npx expo config --type public
+      - name: TypeScript check
+        run: npm run typecheck
 
-      - name: Expo Doctor
-        run: npx expo-doctor
-
-      - name: Verify EAS authentication
-        run: npx eas-cli@23.2.0 whoami
-
-      - name: Verify EAS project
-        run: npx eas-cli@23.2.0 project:info
+      - name: Install Android SDK components
+        uses: android-actions/setup-android@v3
 
       - name: Build Android APK
-        run: npx eas-cli@23.2.0 build --platform android --profile preview --non-interactive --wait
+        working-directory: android
+        run: ./gradlew assembleRelease --stacktrace --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: signum-field-ai-release-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
