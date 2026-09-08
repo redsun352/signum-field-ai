@@ -28,7 +28,13 @@ jobs:
       - name: TypeScript check
         run: npm run typecheck
 
-      - name: Install Android SDK components
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Build Android APK
