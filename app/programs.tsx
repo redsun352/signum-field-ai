@@ -1,4 +1,0 @@
-import { ScrollView, Text } from 'react-native';
-import { Card, styles } from '../src/components/Card';
-import { FACTORY_PROGRAMS } from '../src/data/manual';
-export default function Programs(){return <ScrollView style={styles.page}><Text style={styles.title}>P1–P4 Factory Programs</Text><Text style={styles.subtitle}>v2.06 manual, page 46. Fabrika değerleri başlangıç noktasıdır; manuel bunu açıkça belirtir.</Text>{FACTORY_PROGRAMS.map(p=><Card key={p.id}><Text style={styles.pill}>{p.id}</Text><Text style={styles.cardTitle}>{p.name}</Text><Text style={styles.body}>ST {p.sensitivityST} • RT {p.sensitivityRT} • {p.sensorMode} • {p.soundMode}{`\n`}Gain {p.gain} • AT {p.speedAT} • MM {p.mmSpeed} • EMI {p.emiMM}{`\n`}Filter T {p.filterT} • Filter A {p.filterA} • GS Zone {p.gsZone}{`\n`}ST length {p.stLength} • Border LT {p.borderLT}</Text></Card>)}</ScrollView>}
